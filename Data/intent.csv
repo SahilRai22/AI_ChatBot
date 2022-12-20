@@ -1,0 +1,26 @@
+﻿Utterance,Intent
+"Hey, what is the time",get_time
+Can you tell me the time,get_time
+Whats the time right now,get_time
+What time is it on the clock,get_time
+Tell me the time,get_time
+Tell me the date,get_date
+What day is it,get_date
+Whats today's date,get_date
+Whats the calendar day,get_date
+What's the date right now,get_date
+Tell me today's day,get_date
+Can I change my name,change_name
+Change my name please,change_name
+Change my user name,change_name
+change user name,change_name
+can you change my username,change_name
+can you change my name,change_name
+Bye bye,say_bye
+see you,say_bye
+I am going,say_bye
+talk to you later,say_bye
+I need to go,say_bye
+log me off,say_bye
+Bye bye,say_bye
+see you later,say_bye
