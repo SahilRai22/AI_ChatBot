@@ -7,6 +7,3 @@ In this project I have built a general-purpose chat bot which is based on Lebron
 <p align="center" >
 <img width="407" alt="Screenshot 2022-12-20 at 13 20 37" src="https://user-images.githubusercontent.com/4998533/208676814-f3774a16-367a-4c04-afc0-7f3557c17e9d.png">
 </p> 
-<p align="center" >
-<img width="443" alt="Screenshot 2022-12-20 at 13 20 47" src="https://user-images.githubusercontent.com/4998533/208676851-b595f84b-4242-40a5-a151-16f2c22aec3f.png">
-</p>
