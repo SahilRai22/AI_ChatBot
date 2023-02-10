@@ -4,6 +4,3 @@ In this project I have built a general-purpose chat bot which is based on Lebron
 <p align="center" >
 <img width="486" alt="Screenshot 2022-12-20 at 13 20 23" src="https://user-images.githubusercontent.com/4998533/208676787-4b150175-24ae-4677-866b-a120487b4661.png">
 </p>
-<p align="center" >
-<img width="407" alt="Screenshot 2022-12-20 at 13 20 37" src="https://user-images.githubusercontent.com/4998533/208676814-f3774a16-367a-4c04-afc0-7f3557c17e9d.png">
-</p> 
