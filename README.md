@@ -2,6 +2,7 @@
 
 ## Overview
 This project involves the development of a general-purpose chatbot based on Lebron James and utilizing data from the NBA. The chatbot serves various functions, including identity management, small talk conversations, information retrieval, and question answering.
+
 <p align="center" >
 <img width="486" alt="Screenshot 2022-12-20 at 13 20 23" src="https://user-images.githubusercontent.com/4998533/208676787-4b150175-24ae-4677-866b-a120487b4661.png">
 </p>
