@@ -16,8 +16,9 @@ Chatbots are AI programs that utilize Natural Language Processing (NLP) and sent
 ## Proposed System<p align="center" >
 <p align="center" >
 <img width="406" alt="Screenshot 2024-04-27 at 22 29 02" src="https://github.com/SahilRai22/AI_ChatBot/assets/4998533/fc8cd79c-47bd-44c9-9bed-ed36a0c83e78">
-The proposed system consists of several key functionalities:
 </p>
+
+The proposed system consists of several key functionalities:
 
 ### Identity Management
 - Allows users to set and change their names.
