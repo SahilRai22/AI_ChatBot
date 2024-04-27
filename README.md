@@ -1,4 +1,4 @@
-# Chatbot Project
+# General Purpose Chat Bot 🤖
 
 ## Overview
 This project involves the development of a general-purpose chatbot based on Lebron James and utilizing data from the NBA. The chatbot serves various functions, including identity management, small talk conversations, information retrieval, and question answering.
@@ -8,10 +8,10 @@ This project involves the development of a general-purpose chatbot based on Lebr
 </p>
 
 ## Motivation
-The motivation behind this project was to create a chatbot that simulates human-like conversation, interacts naturally with users, and provides information related to basketball, reflecting the developer's passion for the sport.
+The motivation behind this project was to create a chatbot that simulates human-like conversation, interacts naturally with users, and provides information related to basketball.
 
 ## Background
-Chatbots are AI programs that utilize Natural Language Processing (NLP) and sentiment analysis to communicate in human language. This project is based on the Three Pillars of an NLP-Based chatbot, including generating a dialogue system, Natural Language Understanding (NLU), and Natural Language Generation (NLG).
+Chatbots are AI programs that utilises Natural Language Processing (NLP) and sentiment analysis to communicate in human language. This project is based on the Three Pillars of an NLP-Based chatbot, including generating a dialogue system, Natural Language Understanding (NLU), and Natural Language Generation (NLG).
 
 ## Proposed System<p align="center" >
 <p align="center" >
