@@ -1,187 +1,113 @@
-import numpy
-import numpy 
+import numpy as np
+import pandas as pd
 import random 
 import time
-import pandas 
-from sklearn.feature_extraction.text import TfidfVectorizer
-from sklearn.metrics import pairwise_distances
-from sklearn.metrics.pairwise import cosine_similarity
+import nltk
 from nltk.tokenize import word_tokenize
-import nltk.tokenize
 from nltk.corpus import stopwords
-
 from nltk.stem import WordNetLemmatizer
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.metrics.pairwise import cosine_similarity
 
 QAData = 'Data/QADataSet.csv'
 smallTalkData = 'Data/smalltalk.csv'
 intentData = 'Data/intent.csv'
 nbaQAData = 'Data/NBAQAtest.csv'
 
+lemmatizer = WordNetLemmatizer()
+stop_words = set(stopwords.words('english'))
 
-def main():
+def preprocess(text):
+    tokens = word_tokenize(text.lower())
+    tokens = [lemmatizer.lemmatize(word) for word in tokens if word not in stop_words]
+    return ' '.join(tokens)
 
-    chatBot = "LeBron"
-    userName = "Guest"
-    lemmatiser = WordNetLemmatizer()
+def filter_name(tokenized_name):
+    tokens = word_tokenize(tokenized_name)
+    filtered_tokens = [word for word in tokens if word.lower() not in stop_words]
+    return ''.join(filtered_tokens)
 
-    def preProcess(text):
-        lemmatiser = WordNetLemmatizer()
-        textTokens = word_tokenize(text)
-        tokens = [word.lower() for word in textTokens if not word in stopwords.words('english')]
-        tokens = lemmatiser.lemmatize(tokens)
-        return (''.join(tokens))
+def load_data(file_path):
+    return pd.read_csv(file_path)
 
-    def filterName(tokenizeName):
-        nameToken = word_tokenize(tokenizeName)
-        removeStopWord = [word for word in nameToken if not word in stopwords.words()]
-        # post = nltk.pos_tag(removeStopWord, tagset='universal')
-        name = ''.join(''.join(tup) for tup in removeStopWord)
-        return name
-    
-    # def filterName(tokenizeName):
-    #     nameToken = word_tokenize(tokenizeName)
-    #     removeStopWord = [word for word in nameToken if not word in stopwords.words()]
-    #     # post = nltk.pos_tag(removeStopWord, tagset='universal')
-    #     name = ''.join(''.join(tup) for tup in removeStopWord)
-    #     return nam
+def preprocess_data(data):
+    tfidf_vectorizer = TfidfVectorizer(analyzer='word')
+    tfidf_vectorized = tfidf_vectorizer.fit_transform(data).toarray()
+    return tfidf_vectorized, tfidf_vectorizer
 
-    def startSmallTalk(query, threshold):
-        stDB = pandas.read_csv(smallTalkData) 
-        tfdifVectorize = TfidfVectorizer(analyzer='word')
-        tfidfVectorized = tfdifVectorize.fit_transform(stDB['Utterances']).toarray()
-        dataframeTfidf = pandas.DataFrame(tfidfVectorized, columns = tfdifVectorize.get_feature_names_out())
-        putTfid = tfdifVectorize.transform([query.lower()]).toarray()
-        cosineSim = 1- pairwise_distances(dataframeTfidf, putTfid, metric= 'cosine')
-        if threshold <= cosineSim.max():
-            id_argmax = numpy.where(cosineSim == numpy.max(cosineSim, axis = 0))
-            id = numpy.random.choice(id_argmax[0])
-            return stDB['Reponse'].loc[id]
+def find_response(query, data, tfidf_vectorizer, threshold):
+    tfidf_query = tfidf_vectorizer.transform([preprocess(query)]).toarray()
+    cosine_sim = cosine_similarity(data, tfidf_query)
+    max_sim = cosine_sim.max()
+    if max_sim >= threshold:
+        max_idx = np.where(cosine_sim == max_sim)[0][0]
+        return data.iloc[max_idx]['Response']
+    else:
+        return 'noQuery'
+
+def get_time():
+    return f"The time right now is {time.strftime('%H:%M', time.localtime())}"
+
+def get_date():
+    return f"The date right now is {time.strftime('%A %d %B %Y', time.localtime())}"
+
+def instantiate_bot():
+    chat_bot = "LeBron"
+    user_name = "Guest"
+
+    print(f"{chat_bot}: Hello, I am LeBron James, your general chatbot.")
+
+    query_name = input(f"{chat_bot}: What is your name?\n")
+    if query_name:
+        user_name = filter_name(query_name)
+        print(f"[Your user name has been set to {user_name}]")
+    else:
+        print(f"[Your user name has been set to {user_name}]")
+
+    print(f"{chat_bot}: Hello, {user_name}, how are you? :)")
+
+    while True:
+        query = input(f"{user_name}: ")
+        if query.lower() == 'bye':
+            print(f"{chat_bot}: Bye {user_name}, see you next time!")
+            break
+
+        small_talk_response = find_response(query, small_talk_tfidf, small_talk_vectorizer, 0.8)
+        intent = find_response(query, intent_data, intent_vectorizer, 0.8)
+        qa_answer = find_response(query, qa_data, qa_vectorizer, 0.9)
+        nba_answer = find_response(query, nba_qa_data, nba_vectorizer, 0.5)
+
+        if intent == 'change_name':
+            new_name = input(f"{chat_bot}: What would you like to change your name to?\n")
+            user_name = filter_name(new_name) if new_name else "Guest"
+            print(f"[Success! Your user name has been set to {user_name}]")
+        elif intent == 'get_time':
+            print(f"{chat_bot}: {get_time()}")
+        elif intent == 'get_date':
+            print(f"{chat_bot}: {get_date()}")
+        elif intent == 'say_bye':
+            print(f"{chat_bot}: Bye {user_name}, see you next time!")
+            break
+        elif small_talk_response != 'noQuery':
+            print(f"{chat_bot}: {small_talk_response}")
+        elif qa_answer != 'noQuery':
+            print(f"{chat_bot}: {qa_answer}")
+        elif nba_answer != 'noQuery':
+            print(f"{chat_bot}: {nba_answer}")
         else:
-            return 'noQuery'
+            print(f"{chat_bot}: I did not understand :(, please say something else")
 
-    def startNBAQA(query, threshold):
-        qaDB = pandas.read_csv(nbaQAData)
-        tfdifVectorize = TfidfVectorizer(analyzer='word')
-        tfidfVectorized = tfdifVectorize.fit_transform(qaDB['Question']).toarray()
-        dataframeTfidf = pandas.DataFrame(tfidfVectorized, columns = tfdifVectorize.get_feature_names_out())
-        putTfid = tfdifVectorize.transform([query.lower()]).toarray()
-        cosineSim = 1- pairwise_distances(dataframeTfidf, putTfid, metric= 'cosine')
+if __name__ == "__main__":
+    small_talk_data = load_data(smallTalkData)
+    small_talk_tfidf, small_talk_vectorizer = preprocess_data(small_talk_data['Utterances'])
 
-        if threshold <= cosineSim.max():
-            id_argmax = numpy.where(cosineSim == numpy.max(cosineSim, axis = 0))
-            id = numpy.random.choice(id_argmax[0])
-            return qaDB['Answer'].loc[id]
-        else:
-            return 'noQuery'
+    intent_data = load_data(intentData)
+    intent_tfidf, intent_vectorizer = preprocess_data(intent_data['Utterance'])
 
-    def startQA(query, threshold):
-        qaDB = pandas.read_csv(QAData)
-        tfdifVectorize = TfidfVectorizer(analyzer='word')
-        tfidfVectorized = tfdifVectorize.fit_transform(qaDB['Question']).toarray()
-        dataframeTfidf = pandas.DataFrame(tfidfVectorized, columns = tfdifVectorize.get_feature_names_out())
-        putTfid = tfdifVectorize.transform([query.lower()]).toarray()
-        cosineSim = 1- pairwise_distances(dataframeTfidf, putTfid, metric= 'cosine')
+    qa_data = load_data(QAData)
+    qa_tfidf, qa_vectorizer = preprocess_data(qa_data['Question'])
 
-        if threshold <= cosineSim.max():
-            id_argmax = numpy.where(cosineSim == numpy.max(cosineSim, axis = 0))
-            id = numpy.random.choice(id_argmax[0])
-            return qaDB['Answer'].loc[id]
-        else:
-            return 'noQuery'
+    nba_qa_data = load_data(nbaQAData)
+    nba_tfidf, nba_vectorizer = preprocess_data(nba_qa_data['Question'])
 
-    def startIntent(query, threshold):
-        iDB = pandas.read_csv(intentData)
-        tfdifVectorize = TfidfVectorizer(analyzer='word')
-        tfidfVectorized = tfdifVectorize.fit_transform(iDB['Utterance']).toarray()
-        dataframeTfidf = pandas.DataFrame(tfidfVectorized, columns = tfdifVectorize.get_feature_names_out())
-        putTfid = tfdifVectorize.transform([query.lower()]).toarray()
-        cosineSim = 1- pairwise_distances(dataframeTfidf, putTfid, metric= 'cosine')
-
-        if threshold <= cosineSim.max():
-            id_argmax = numpy.where(cosineSim == numpy.max(cosineSim, axis = 0))
-            id = numpy.random.choice(id_argmax[0])
-            return iDB['Intent'].loc[id]
-
-    def getTime():
-        responses = ["The time right now is ", "The time is ", "Currently it is "]
-
-        clock = time.time()
-        timeResponse = random.choice(responses) + time.strftime('%H:%M', time.localtime(clock))
-        return timeResponse
-
-    def getDate():
-        responses = ["Tue date right now is ", "The date is ", "Today's date is "]
-        clock = time.time()
-        dataResponse = random.choice(responses) + time.strftime('%A %d %B %Y', time.localtime(clock))
-        return dataResponse
-     
-    def instantiateBot():
-        stopQuery = False 
-        # ---- Name management ---- 
-        queryName = input(chatBot + ": Hello I am Lebron James, your general chatbot what is your name?\n")
-        if(queryName):
-                userName = filterName(queryName)
-                print(f"[Your user name has been set to {userName}]")
-                time.sleep(1.5)
-                print("[note you can change your name, Just ask LeBron!] ")
-                time.sleep(1.5)
-  
-        else:
-            userName = "Guest"
-            #time.sleep(1.5)
-            print(f"{chatBot}: Your user name has been set to {userName}")
-            time.sleep(1.5)
-            print(">> note you can change your name, Just ask LeBron! :) ")
-            time.sleep(1.5)
-            #print(f"{chatBot}: Hello ", userName)
-               
-
-        print(f"{chatBot}: Hello, {userName} how are you? :)")
-        while not stopQuery:
-            query = input(f"{userName}: ")
-            smallTalkResponse = startSmallTalk(query, threshold = 0.8)
-            intents = startIntent(query, threshold = 0.8)
-            qaAnswers = startQA(query, threshold = 0.9)
-            nbaAnswers = startNBAQA(query, threshold = 0.5)
-            # ---- Resolve Query ----  
-
-            if  intents == 'change_name':
-                queryName = input(chatBot + ": What would you like to change your name to?\n")
-                userName = filterName(queryName)
-                if userName == '':
-                    userName = "Guest"
-                print(f"[Success!! Your user name has been set to {userName}]")
-                print(f"{chatBot}: Hello, {userName} could i help you with anything else?")
-                continue  
-
-            elif intents == 'get_time':
-                print(f"{chatBot}:" , getTime())
-
-            elif intents == 'get_date':
-                print(f"{chatBot}:" , getDate())
-            
-            elif intents == 'say_bye':
-                print(f"{chatBot}: Bye {userName}, see you next time!")
-                stopQuery = True
-                break
-
-            elif smallTalkResponse !='noQuery':
-                print(f"{chatBot}:", smallTalkResponse)
-                continue
-
-            elif qaAnswers != 'noQuery':
-                 print(f"{chatBot}:", qaAnswers)
-                 print(f"{chatBot}:", "Could I help you with anything else?")
-
-            elif nbaAnswers != 'noQuery':
-                print(f"{chatBot}:", nbaAnswers)
-                print(f"{chatBot}:", "Could I help you with anything else?")
-
-            else:
-                print(f"{chatBot}: I did not understand :(, please say something else " )
-
-    instantiateBot()
-main()      
-    
-
-
+    instantiate_bot()
