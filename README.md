@@ -38,6 +38,3 @@ The proposed system consists of several key functionalities:
 ### Intent Matching
 - Recognizes user intents, such as getting the time, date, changing name, and ending the conversation.
 - Matches user queries with predefined intents to trigger appropriate actions.
-
-## Evaluation
-The chatbot underwent user testing to identify comprehensive problems and limitations. Testing revealed issues related to dialogue flow, name recognition, and dataset size. Further development and refinement are required to improve real-life usage.
